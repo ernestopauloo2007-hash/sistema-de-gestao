@@ -9,11 +9,16 @@ jobs:
     - name: Copiar Repositorio
       uses: actions/checkout@v4
 
-    - name: Configurar MinGW
-      uses: egor-tukin/setup-mingw@v2
+    - name: Configurar MSYS2 e G++
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: mingw-w64-x86_64-toolchain
 
     - name: Compilar Codigo Estaticamente
-     run: g++ main.cpp gestao_escolar.cpp -o SistemaEscolar.exe -static
+      shell: msys2 {0}
+      run: g++ main.cpp gestao_escolar.cpp -o SistemaEscolar.exe -static
 
     - name: Guardar o Executavel (.exe)
       uses: actions/upload-artifact@v4
