@@ -1,4 +1,4 @@
-name: Compilar Cpp para Windows
+name: Compilar Cpp para Windows (Compatível com Win 7+)
 
 on: [push]
 
@@ -6,23 +6,27 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Copiar Repositorio
-      uses: actions/checkout@v4
+      - name: Copiar Repositorio
+        uses: actions/checkout@v4
 
-    - name: Configurar MSYS2 e G++
-      uses: msys2/setup-msys2@v2
-      with:
-      
-        msystem: MINGW64
-        update: true
-        install: mingw-w64-x86_64-toolchain
+      - name: Configurar MSYS2 e G++
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: mingw-w64-x86_64-toolchain
 
-    - name: Compilar Codigo Estaticamente
-      shell: msys2 {0}
-      run: g++ main.cpp gestao_escolar.cpp -o SistemaEscolar.exe -static
+      - name: Compilar Codigo Estaticamente com Compatibilidade Retroativa
+        shell: msys2 {0}
+        run: |
+          g++ main.cpp gestao_escolar.cpp -o SistemaEscolar.exe \
+            -static \
+            -static-libgcc \
+            -static-libstdc++ \
+            -D_WIN32_WINNT=0x0601
 
-    - name: Guardar o Executavel (.exe)
-      uses: actions/upload-artifact@v4
-      with:
-        name: SistemaEscolar-Portatil
-        path: SistemaEscolar.exe
+      - name: Guardar o Executavel (.exe)
+        uses: actions/upload-artifact@v4
+        with:
+          name: SistemaEscolar-Portatil-Win7Plus
+          path: SistemaEscolar.exe
